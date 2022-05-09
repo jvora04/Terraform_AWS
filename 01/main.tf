@@ -13,7 +13,6 @@ resource "aws_vpc" "main" {
 }
 
 # Public Subnet with Default Route to Internet Gateway
-# https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/subnet
 resource "aws_subnet" "public" {
   vpc_id     = aws_vpc.main.id
   cidr_block = "10.0.0.0/24"
@@ -24,7 +23,6 @@ resource "aws_subnet" "public" {
 }
 
 # Private Subnet with Default Route to NAT Gateway
-# https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/subnet
 resource "aws_subnet" "private" {
   vpc_id     = aws_vpc.main.id
   cidr_block = "10.0.1.0/24"
@@ -35,7 +33,6 @@ resource "aws_subnet" "private" {
 }
 
 # Main Internal Gateway for VPC
-# https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/internet_gateway
 resource "aws_internet_gateway" "igw" {
   vpc_id = aws_vpc.main.id
 
@@ -45,7 +42,6 @@ resource "aws_internet_gateway" "igw" {
 }
 
 # Elastic IP for NAT Gateway
-# https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eip
 resource "aws_eip" "nat_eip" {
   vpc        = true
   depends_on = [aws_internet_gateway.igw]
@@ -55,7 +51,6 @@ resource "aws_eip" "nat_eip" {
 }
 
 # Main NAT Gateway for VPC
-# https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/nat_gateway
 resource "aws_nat_gateway" "nat" {
   allocation_id = aws_eip.nat_eip.id
   subnet_id     = aws_subnet.public.id
@@ -66,7 +61,6 @@ resource "aws_nat_gateway" "nat" {
 }
 
 # Route Table for Public Subnet
-# https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/route_table
 resource "aws_route_table" "public" {
   vpc_id = aws_vpc.main.id
 
@@ -81,14 +75,12 @@ resource "aws_route_table" "public" {
 }
 
 # Association between Public Subnet and Public Route Table
-# https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/route_table_association
 resource "aws_route_table_association" "public" {
   subnet_id      = aws_subnet.public.id
   route_table_id = aws_route_table.public.id
 }
 
 # Route Table for Private Subnet
-# https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/route_table
 resource "aws_route_table" "private" {
   vpc_id = aws_vpc.main.id
 
@@ -103,7 +95,6 @@ resource "aws_route_table" "private" {
 }
 
 # Association between Private Subnet and Private Route Table
-# https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/route_table_association
 resource "aws_route_table_association" "private" {
   subnet_id      = aws_subnet.private.id
   route_table_id = aws_route_table.private.id
